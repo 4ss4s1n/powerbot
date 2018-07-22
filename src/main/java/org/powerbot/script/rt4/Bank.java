@@ -185,6 +185,27 @@ public class Bank extends ItemQuery<Item> {
 			}
 		}, 30, 10));
 	}
+	
+	/**
+     	* @param escape If true, the code shall try to use escape key to close the interface.
+     	* @return {@code true} if the bank is not opened, or if it was successfully closed; otherwise {@code false}
+     	*/
+    	public boolean close(final boolean escape){
+        	if(!opened()){
+            		return true;
+        	}
+        	if(escape) {
+            		if(!ctx.game.escapeClosing()) {
+                		ctx.controller.script().log.warning("User does not have escape enabled, using regular close.");
+            		} else {
+                		ctx.input.send("{VK_ESCAPE down}");
+                		boolean opened = Condition.wait(() -> !opened(), 30, 10);
+                		ctx.input.send("{VK_ESCAPE up}");
+                		return opened;
+            		}
+        	}
+        	return close();
+    	}
 
 	/**
 	 * Withdraws an item with the provided id and amount.
